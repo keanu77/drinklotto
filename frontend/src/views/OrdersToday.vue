@@ -1,16 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 
 const orders = ref([]);
 const loading = ref(true);
 
 const fetchOrders = async () => {
   try {
-    const token = localStorage.getItem('token') || '';
-    const res = await axios.get('/api/orders/today', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const res = await api.get('/api/orders/today');
     orders.value = res.data;
   } catch (e) {
     console.error('Failed to fetch orders:', e);

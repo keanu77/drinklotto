@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 
 const room = ref(null);
 const orders = ref([]);
@@ -8,13 +8,10 @@ const loading = ref(true);
 
 onMounted(async () => {
   try {
-    const roomRes = await axios.get('/api/room/today');
+    const roomRes = await api.get('/api/room/today');
     room.value = roomRes.data;
 
-    const token = localStorage.getItem('token') || '';
-    const ordersRes = await axios.get('/api/orders/today', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const ordersRes = await api.get('/api/orders/today');
     orders.value = ordersRes.data;
   } catch (e) {
     console.error('Failed to fetch data:', e);

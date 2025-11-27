@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 
 const room = ref(null);
 const loading = ref(true);
@@ -8,7 +8,7 @@ const resetting = ref(false);
 
 const fetchRoom = async () => {
   try {
-    const res = await axios.get('/api/room/today');
+    const res = await api.get('/api/room/today');
     room.value = res.data;
   } catch (e) {
     console.error('Failed to fetch room:', e);
@@ -22,10 +22,7 @@ const resetRoom = async () => {
 
   resetting.value = true;
   try {
-    const token = localStorage.getItem('token') || '';
-    await axios.post('/api/room/reset', {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    await api.post('/api/room/reset', {});
     room.value = null;
     alert('房間已重置');
   } catch (e) {

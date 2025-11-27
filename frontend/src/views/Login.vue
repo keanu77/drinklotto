@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 import { useRouter } from 'vue-router';
 
 const username = ref('');
@@ -11,12 +11,11 @@ const router = useRouter();
 const login = async () => {
   error.value = '';
   try {
-    const res = await axios.post('/api/admin/login', {
+    const res = await api.post('/api/admin/login', {
       username: username.value,
       password: password.value
     });
-    localStorage.setItem('token', res.data.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+    localStorage.setItem('admin_token', res.data.token);
     router.push('/');
   } catch (e) {
     error.value = '帳號或密碼錯誤';

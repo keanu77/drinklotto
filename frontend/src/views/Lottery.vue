@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 
 const room = ref(null);
 const currentStore = ref(null);
@@ -11,7 +11,7 @@ const showNameInput = ref(false);
 
 const fetchRoom = async () => {
   try {
-    const res = await axios.get('/api/room/today');
+    const res = await api.get('/api/room/today');
     room.value = res.data;
     if (res.data?.status === 'store_selected') {
       hasSelected.value = true;
@@ -36,7 +36,7 @@ const spinLottery = async (forceReroll = false) => {
 
   const interval = setInterval(async () => {
     try {
-      const res = await axios.get('/api/stores/random?region=大安區');
+      const res = await api.get('/api/stores/random?region=大安區');
       currentStore.value = res.data;
     } catch (e) {
       // ignore
@@ -47,7 +47,7 @@ const spinLottery = async (forceReroll = false) => {
       clearInterval(interval);
       // 最終抽選結果
       try {
-        const res = await axios.post('/api/room/lottery', {
+        const res = await api.post('/api/room/lottery', {
           region: '大安區',
           forceReroll: forceReroll
         });
@@ -70,7 +70,7 @@ const confirmSelection = async () => {
   }
 
   try {
-    const res = await axios.post('/api/room/select', {
+    const res = await api.post('/api/room/select', {
       roomId: room.value.id,
       storeId: currentStore.value.id,
       deciderName: deciderName.value.trim()

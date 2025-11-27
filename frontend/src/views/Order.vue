@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -25,7 +25,7 @@ const toppingOptions = ['珍珠', '椰果', '仙草', '布丁', '芋圓', '粉�
 
 const fetchRoom = async () => {
   try {
-    const res = await axios.get('/api/room/today');
+    const res = await api.get('/api/room/today');
     room.value = res.data;
     if (!res.data || res.data.status !== 'store_selected') {
       // 尚未選定店家，導回樂透頁
@@ -60,7 +60,7 @@ const submitOrder = async () => {
 
   submitting.value = true;
   try {
-    await axios.post('/api/orders', {
+    await api.post('/api/orders', {
       roomId: room.value.id,
       storeId: room.value.storeId,
       name: form.value.name.trim(),

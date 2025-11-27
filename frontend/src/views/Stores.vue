@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../api.js';
 
 const stores = ref([]);
 const loading = ref(true);
@@ -21,13 +21,9 @@ const form = ref({
   isActive: true
 });
 
-const getToken = () => localStorage.getItem('token') || '';
-
 const fetchStores = async () => {
   try {
-    const res = await axios.get('/api/stores', {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    });
+    const res = await api.get('/api/stores');
     stores.value = res.data;
   } catch (e) {
     console.error('Failed to fetch stores:', e);
@@ -68,11 +64,10 @@ const closeForm = () => {
 
 const saveStore = async () => {
   try {
-    const headers = { Authorization: `Bearer ${getToken()}` };
     if (editingId.value) {
-      await axios.put(`/api/stores/${editingId.value}`, form.value, { headers });
+      await api.put(`/api/stores/${editingId.value}`, form.value);
     } else {
-      await axios.post('/api/stores', form.value, { headers });
+      await api.post('/api/stores', form.value);
     }
     closeForm();
     fetchStores();
@@ -84,9 +79,7 @@ const saveStore = async () => {
 const deleteStore = async (id) => {
   if (!confirm('確定要刪除此店家嗎？')) return;
   try {
-    await axios.delete(`/api/stores/${id}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    });
+    await api.delete(`/api/stores/${id}`);
     fetchStores();
   } catch (e) {
     alert('刪除失敗：' + (e.response?.data?.error || e.message));
@@ -95,10 +88,7 @@ const deleteStore = async (id) => {
 
 const toggleActive = async (store) => {
   try {
-    await axios.put(`/api/stores/${store.id}`,
-      { isActive: !store.isActive },
-      { headers: { Authorization: `Bearer ${getToken()}` } }
-    );
+    await api.put(`/api/stores/${store.id}`, { isActive: !store.isActive });
     fetchStores();
   } catch (e) {
     alert('更新失敗');
@@ -132,9 +122,8 @@ const handleFileSelect = async (event) => {
     const formData = new FormData();
     formData.append('image', file);
 
-    const res = await axios.post('/api/upload/menu', formData, {
+    const res = await api.post('/api/upload/menu', formData, {
       headers: {
-        Authorization: `Bearer ${getToken()}`,
         'Content-Type': 'multipart/form-data'
       }
     });
