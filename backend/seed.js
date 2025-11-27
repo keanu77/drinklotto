@@ -4,19 +4,19 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 建立管理員帳號
-  const passwordHash = await bcrypt.hash('admin123', 10);
+  // 建立管理員帳號 - landseed
+  const passwordHash = await bcrypt.hash('landseed1012', 10);
 
   await prisma.admin.upsert({
-    where: { username: 'admin' },
-    update: {},
+    where: { username: 'landseed' },
+    update: { passwordHash },
     create: {
-      username: 'admin',
+      username: 'landseed',
       passwordHash
     }
   });
 
-  console.log('Admin user created: admin / admin123');
+  console.log('Admin user created: landseed / landseed1012');
 
   // 建立範例飲料店（大安區）- 2025 最新資訊
   const stores = [

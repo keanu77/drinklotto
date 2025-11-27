@@ -16,7 +16,7 @@ const login = async () => {
       password: password.value
     });
     localStorage.setItem('admin_token', res.data.token);
-    router.push('/');
+    router.push('/admin');
   } catch (e) {
     error.value = '帳號或密碼錯誤';
   }
