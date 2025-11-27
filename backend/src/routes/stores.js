@@ -26,9 +26,9 @@ router.get('/', authMiddleware, async (req, res) => {
 
 // 後台：POST /api/stores
 router.post('/', authMiddleware, async (req, res) => {
-  const { name, type, region, address, menuUrl, uberUrl, pandaUrl, isActive } = req.body;
+  const { name, type, region, address, menuUrl, menuImageUrl, uberUrl, pandaUrl, isActive } = req.body;
   const store = await prisma.store.create({
-    data: { name, type, region, address, menuUrl, uberUrl, pandaUrl, isActive: isActive ?? true }
+    data: { name, type, region, address, menuUrl, menuImageUrl, uberUrl, pandaUrl, isActive: isActive ?? true }
   });
   res.status(201).json(store);
 });
