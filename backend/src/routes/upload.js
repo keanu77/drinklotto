@@ -11,10 +11,13 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Upload directory - use UPLOAD_DIR env var for Zeabur Volume, fallback to local
+const UPLOAD_BASE = process.env.UPLOAD_DIR || path.join(__dirname, '../../uploads');
+
 // Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/menus');
+    const uploadDir = path.join(UPLOAD_BASE, 'menus');
     // Ensure directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -65,7 +68,7 @@ router.post('/menu', authMiddleware, upload.single('image'), (req, res) => {
 // DELETE /api/upload/menu/:filename - Delete menu image
 router.delete('/menu/:filename', authMiddleware, (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, '../../uploads/menus', filename);
+  const filePath = path.join(UPLOAD_BASE, 'menus', filename);
 
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);

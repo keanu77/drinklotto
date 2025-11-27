@@ -6,6 +6,8 @@ const stores = ref([]);
 const loading = ref(true);
 const showForm = ref(false);
 const editingId = ref(null);
+const uploading = ref(false);
+const fileInput = ref(null);
 
 const form = ref({
   name: '',
@@ -91,6 +93,37 @@ const toggleActive = async (store) => {
   } catch (e) {
     alert('更新失敗');
   }
+};
+
+const triggerFileInput = () => {
+  fileInput.value?.click();
+};
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  uploading.value = true;
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const res = await api.post('/api/upload/menu', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    // Build full URL for the uploaded image
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    form.value.menuImageUrl = baseUrl + res.data.imageUrl;
+  } catch (e) {
+    alert('上傳失敗：' + (e.response?.data?.error || e.message));
+  } finally {
+    uploading.value = false;
+    event.target.value = '';
+  }
+};
+
+const removeImage = () => {
+  form.value.menuImageUrl = '';
 };
 
 onMounted(fetchStores);
@@ -193,14 +226,27 @@ onMounted(fetchStores);
             <input v-model="form.address" type="text" placeholder="完整地址" />
           </div>
 
-          <!-- 菜單圖片網址 -->
+          <!-- 菜單圖片上傳 -->
           <div class="form-group full-width">
-            <label>菜單圖片網址</label>
-            <input v-model="form.menuImageUrl" type="url" placeholder="https://imgur.com/xxx.jpg" />
-            <div v-if="form.menuImageUrl" class="image-preview-small">
-              <img :src="form.menuImageUrl" alt="菜單預覽" />
+            <label>菜單圖片</label>
+            <input
+              type="file"
+              ref="fileInput"
+              @change="handleFileUpload"
+              accept="image/*"
+              style="display: none"
+            />
+            <div v-if="!form.menuImageUrl" class="image-upload-area" @click="triggerFileInput">
+              <div class="upload-placeholder">
+                <span v-if="uploading">上傳中...</span>
+                <span v-else>點擊上傳菜單圖片</span>
+              </div>
             </div>
-            <p class="upload-hint">請貼上外部圖片網址（imgur、Google Drive 等）</p>
+            <div v-else class="image-preview">
+              <img :src="form.menuImageUrl" alt="菜單預覽" />
+              <button type="button" class="remove-image-btn" @click="removeImage">×</button>
+            </div>
+            <p class="upload-hint">支援 JPG、PNG、GIF、WebP，最大 10MB</p>
           </div>
 
           <div class="form-group full-width">
