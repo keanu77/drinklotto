@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Store {
+  id           Int         @id @default(autoincrement())
+  name         String      @unique
+  type         String?
+  region       String      // 例如：大安區
+  address      String?
+  menuUrl      String?     // 菜單連結
+  menuImageUrl String?     // 菜單圖片網址
+  uberUrl      String?
+  pandaUrl     String?
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+
+  rooms     DrinkRoom[]
+  orders    Order[]
+}
+
+model DrinkRoom {
+  id          Int        @id @default(autoincrement())
+  roomDate    DateTime   // 一天一筆，例如以當日 00:00 表示
+  status      String     @default("pending_selection")
+  // pending_selection / store_selected / closed
+
+  storeId     Int?
+  store       Store?     @relation(fields: [storeId], references: [id])
+
+  deciderName String?
+  rerollCount Int        @default(0)
+
+  createdAt   DateTime   @default(now())
+
+  orders      Order[]
+}
+
+model Order {
+  id         Int        @id @default(autoincrement())
+  roomId     Int
+  room       DrinkRoom  @relation(fields: [roomId], references: [id])
+
+  storeId    Int
+  store      Store      @relation(fields: [storeId], references: [id])
+
+  name       String
+  drink      String
+  sweetness  String
+  iceLevel   String
+  toppings   String?   // JSON string for compatibility
+  notes      String?
+  status     String     @default("pending")
+
+  createdAt  DateTime   @default(now())
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String   // 使用 bcrypt hash
+  createdAt    DateTime @default(now())
+}
