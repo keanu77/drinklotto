@@ -25,17 +25,26 @@ router.post('/', async (req, res) => {
   res.status(201).json(order);
 });
 
-// 後台：GET /api/orders/today
+// 後台：GET /api/orders/today (或指定日期 ?date=2025-01-15)
 router.get('/today', authMiddleware, async (req, res) => {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  let targetDate;
+
+  if (req.query.date) {
+    // 使用指定日期
+    targetDate = new Date(req.query.date);
+  } else {
+    // 使用今天
+    targetDate = new Date();
+  }
+
+  const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  const endOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() + 1);
 
   const orders = await prisma.order.findMany({
     where: {
       createdAt: {
-        gte: today,
-        lt: tomorrow
+        gte: startOfDay,
+        lt: endOfDay
       }
     },
     include: {
@@ -46,6 +55,23 @@ router.get('/today', authMiddleware, async (req, res) => {
   });
 
   res.json(orders);
+});
+
+// 後台：GET /api/orders/dates - 取得有訂單的日期列表
+router.get('/dates', authMiddleware, async (req, res) => {
+  const orders = await prisma.order.findMany({
+    select: { createdAt: true },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // 取得不重複的日期列表
+  const dateSet = new Set();
+  orders.forEach(o => {
+    const dateStr = o.createdAt.toISOString().split('T')[0];
+    dateSet.add(dateStr);
+  });
+
+  res.json(Array.from(dateSet));
 });
 
 export default router;

@@ -117,6 +117,69 @@ async function main() {
       menuUrl: 'https://www.facebook.com/yimuri.tw/',
       menuImageUrl: 'https://i.imgur.com/yimuri-menu.jpg',
       uberUrl: 'https://www.ubereats.com/tw/brand/yimuri'
+    },
+    {
+      name: '發發',
+      type: '手搖飲',
+      region: '大安區',
+      address: '台北市大安區忠孝東路四段216巷27弄3號',
+      menuUrl: 'https://www.instagram.com/fafa_tea_/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/fafa-tea',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cz0sz/fa-fa'
+    },
+    {
+      name: '麻古茶坊',
+      type: '水果茶專賣',
+      region: '大安區',
+      address: '台北市大安區忠孝東路四段205巷7弄5號',
+      menuUrl: 'https://www.macutea.com.tw/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/macu-tea',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cv5jm/ma-gu-cha-fang'
+    },
+    {
+      name: '得正',
+      type: '烏龍茶專賣',
+      region: '大安區',
+      address: '台北市大安區復興南路一段135巷7號',
+      menuUrl: 'https://www.instagram.com/daizheng_tea/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/daizheng',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cz3pd/de-zheng'
+    },
+    {
+      name: '烏弄',
+      type: '烏龍茶專賣',
+      region: '大安區',
+      address: '台北市大安區敦化南路一段187巷29號',
+      menuUrl: 'https://www.instagram.com/woooolong_tea/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/wulong',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cz1qp/wu-nong'
+    },
+    {
+      name: '珍煮丹',
+      type: '黑糖珍珠專賣',
+      region: '大安區',
+      address: '台北市大安區忠孝東路四段181巷35弄6號',
+      menuUrl: 'https://www.jenjudan.com.tw/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/jenjudan',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cv5iq/zhen-zhu-dan'
+    },
+    {
+      name: '沐茗',
+      type: '手搖飲',
+      region: '大安區',
+      address: '台北市大安區復興南路一段107巷5弄12號',
+      menuUrl: 'https://www.instagram.com/muming_tea/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/muming',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cx3sp/mu-ming'
+    },
+    {
+      name: '再睡五分鐘',
+      type: '手搖飲',
+      region: '大安區',
+      address: '台北市大安區忠孝東路四段223巷10弄4號',
+      menuUrl: 'https://www.instagram.com/fivemoreminutes_tea/',
+      uberUrl: 'https://www.ubereats.com/tw/brand/five-more-minutes',
+      pandaUrl: 'https://www.foodpanda.com.tw/chain/cz2qw/zai-shui-wu-fen-zhong'
     }
   ];
 

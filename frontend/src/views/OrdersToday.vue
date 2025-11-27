@@ -1,13 +1,59 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../api.js';
 
 const orders = ref([]);
 const loading = ref(true);
+const availableDates = ref([]);
+const selectedDate = ref('');
+
+// 取得今天日期字串 (YYYY-MM-DD)
+const getTodayString = () => {
+  const now = new Date();
+  return now.toISOString().split('T')[0];
+};
+
+// 格式化日期顯示
+const formatDateDisplay = (dateStr) => {
+  const date = new Date(dateStr);
+  const today = getTodayString();
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekday = weekdays[date.getDay()];
+
+  if (dateStr === today) {
+    return `今天 (${date.getMonth() + 1}/${date.getDate()} 週${weekday})`;
+  }
+  return `${date.getMonth() + 1}/${date.getDate()} 週${weekday}`;
+};
+
+const isToday = computed(() => selectedDate.value === getTodayString());
+
+const fetchAvailableDates = async () => {
+  try {
+    const res = await api.get('/api/orders/dates');
+    availableDates.value = res.data;
+
+    // 如果今天不在列表中，加入今天
+    const today = getTodayString();
+    if (!availableDates.value.includes(today)) {
+      availableDates.value.unshift(today);
+    }
+
+    // 預設選擇今天
+    selectedDate.value = today;
+  } catch (e) {
+    console.error('Failed to fetch dates:', e);
+    selectedDate.value = getTodayString();
+  }
+};
 
 const fetchOrders = async () => {
+  loading.value = true;
   try {
-    const res = await api.get('/api/orders/today');
+    const url = selectedDate.value
+      ? `/api/orders/today?date=${selectedDate.value}`
+      : '/api/orders/today';
+    const res = await api.get(url);
     orders.value = res.data;
   } catch (e) {
     console.error('Failed to fetch orders:', e);
@@ -16,18 +62,41 @@ const fetchOrders = async () => {
   }
 };
 
+const onDateChange = () => {
+  fetchOrders();
+};
+
 const formatToppings = (toppings) => {
   if (!toppings) return '-';
   if (Array.isArray(toppings)) return toppings.join(', ');
-  return JSON.stringify(toppings);
+  try {
+    const parsed = JSON.parse(toppings);
+    if (Array.isArray(parsed)) return parsed.join(', ');
+    return toppings;
+  } catch {
+    return toppings;
+  }
 };
 
-onMounted(fetchOrders);
+onMounted(async () => {
+  await fetchAvailableDates();
+  await fetchOrders();
+});
 </script>
 
 <template>
   <div>
-    <h1>今日訂單列表</h1>
+    <div class="page-header">
+      <h1>{{ isToday ? '今日訂單' : '歷史訂單' }}</h1>
+      <div class="date-selector">
+        <label>選擇日期：</label>
+        <select v-model="selectedDate" @change="onDateChange">
+          <option v-for="date in availableDates" :key="date" :value="date">
+            {{ formatDateDisplay(date) }}
+          </option>
+        </select>
+      </div>
+    </div>
 
     <div v-if="loading" class="card">載入中...</div>
 
@@ -69,15 +138,23 @@ onMounted(fetchOrders);
       </div>
 
       <div class="card" v-else>
-        <p>今天還沒有任何訂單。</p>
+        <p>{{ isToday ? '今天還沒有任何訂單。' : '該日期沒有訂單記錄。' }}</p>
       </div>
     </template>
   </div>
 </template>
 
 <style scoped>
-h1 {
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+h1 {
+  margin: 0;
   color: #1a1a2e;
   font-size: 28px;
   font-weight: 700;
@@ -88,6 +165,35 @@ h1 {
 h1::before {
   content: '📝';
   font-size: 32px;
+}
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.date-selector label {
+  font-weight: 600;
+  color: #3e4c59;
+  font-size: 14px;
+}
+.date-selector select {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  cursor: pointer;
+  min-width: 180px;
+  transition: all 0.2s ease;
+}
+.date-selector select:focus {
+  border-color: #008dd4;
+  box-shadow: 0 0 0 3px rgba(0, 141, 212, 0.15);
+  outline: none;
+}
+.date-selector select:hover {
+  border-color: #008dd4;
 }
 .card {
   border-radius: 16px;
